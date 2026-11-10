@@ -250,21 +250,23 @@ Discord requires at least 1 viewer in the channel for hours to count. Instead of
 ```mermaid
 flowchart TD
     subgraph Games ["Game Badges (games.py)"]
-        A1[Client Script] -->|1. Auth Handshake| B1[Discord REST API /users/@me]
+        A1["Client Script"] -->|1. Auth Handshake| B1["Discord REST API /users/@me"]
         B1 -->|Analytics Token| A1
-        A1 -->|2. Science Telemetry Payload| C1[Discord Analytics /api/v9/science]
-        C1 -->|HTTP 204 Accepted| D1[(Discord Analytics Warehouse)]
+        A1 -->|2. Science Telemetry Payload| C1["Discord Analytics /api/v9/science"]
+        C1 -->|HTTP 204 Accepted| D1[("Discord Analytics Warehouse")]
     end
 
     subgraph Streaming ["Streaming Badge (stream.py)"]
-        A2[Stream Engine] -->|1. Connect op:2| B2[Main Gateway wss://gateway.discord.gg]
-        B2 -->|2. op:4 Join Voice| C2[Voice WS & UDP Hole Punch]
-        C2 -->|3. op:18 STREAM_CREATE| D2[Stream Voice WS & Media Pump]
-        D2 -->|4. Continuous Keepalive| E2[(Discord RTC / SFU Workers)]
+        A2["Stream Engine"] -->|1. Gateway op:2| B2["Main Gateway wss://gateway.discord.gg"]
+        B2 -->|2. op:4 Join Voice| C2["Voice WS & UDP Hole Punch"]
+        C2 -->|3. op:18 STREAM_CREATE| D2["Dedicated Stream Voice WS"]
+        D2 -->|4. DAVE MLS E2EE| E2[("Discord RTC / SFU Media Workers")]
+        A2 -->|5. FFmpeg H.264 & Opus + RTCP| E2
+        V2["Alt Viewer Bot / Real Viewers"] -->|6. Watch Stream op:20 + DAVE| E2
     end
 
-    D1 -->|24-48h Aggregation| F[Updated Discord Profile Badges]
-    E2 -->|Server-Tracked Stream Hours| F
+    D1 -->|24-48h Aggregation| F["Updated Discord Profile Badges"]
+    E2 -->|Verified Broadcast + Viewer Hours| F
 ```
 
 ---
@@ -282,7 +284,7 @@ flowchart TD
 - <a href="https://github.com/revere-group"><img src="https://github.com/revere-group.png?size=60" width="28" height="28" style="border-radius: 50%; vertical-align: middle;" alt="Revere Group" /></a> **[Revere Group](https://github.com/revere-group)**: The core idea and original structure.
 - <a href="https://gist.github.com/dolfies"><img src="https://github.com/dolfies.png?size=60" width="28" height="28" style="border-radius: 50%; vertical-align: middle;" alt="dolfies" /></a> **[dolfies](https://gist.github.com/dolfies)**: `L44–L157`: From [Discord's executable fingerprint](https://gist.github.com/dolfies/d442777ab8354e18c1a3827e27f85c3a) reverse engineering script.
 ### `stream.py`
-- <a href="https://github.com/sonujana26"><img src="https://github.com/sonujana26.png?size=60" width="28" height="28" style="border-radius: 50%; vertical-align: middle;" alt="sonujana26" /></a> **[sonujana26](https://github.com/sonujana26)**: Advanced headless Gateway + Voice + Video Streamer + Go Live stream engine.
+- <a href="https://github.com/sonuworks"><img src="https://github.com/sonuworks.png?size=60" width="28" height="28" style="border-radius: 50%; vertical-align: middle;" alt="sonuworks" /></a> **[sonuworks](https://github.com/sonuworks)**: Advanced headless Gateway + Voice + Video Streamer + Go Live stream engine.
 
 ---
 
